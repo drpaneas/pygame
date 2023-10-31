@@ -33,15 +33,17 @@ func (t TilesGroup) Draw(surface *pixelgl.Window) {
 }
 
 type Level struct {
-	Layout  [][]string
-	Surface *pixelgl.Window
-	Tiles   TilesGroup
+	Layout     [][]string
+	Surface    *pixelgl.Window
+	Tiles      TilesGroup
+	WorldShift float64
 }
 
 func NewLevel(layout [][]string, surface *pixelgl.Window) *Level {
 	l := &Level{
-		Layout:  layout,
-		Surface: surface,
+		Layout:     layout,
+		Surface:    surface,
+		WorldShift: 0,
 	}
 
 	l.SetupLevel(l.Layout)
@@ -74,6 +76,6 @@ func (t TilesGroup) Update(xShift float64) {
 }
 
 func (l *Level) Run() {
-	l.Tiles.Update(-4)
+	l.Tiles.Update(l.WorldShift)
 	l.Tiles.Draw(l.Surface)
 }
