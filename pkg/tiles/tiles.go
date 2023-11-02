@@ -55,3 +55,17 @@ func (t *Tile) Draw(surface *pixelgl.Window) {
 	mat := pixel.IM.Moved(t.Position)
 	t.Sprite.Draw(surface, mat)
 }
+
+type TilesGroup []*Tile
+
+func (t TilesGroup) Draw(surface *pixelgl.Window) {
+	for _, tile := range t {
+		tile.Draw(surface)
+	}
+}
+
+func (t TilesGroup) Update(xShift float64) {
+	for _, tile := range t {
+		tile.Update(xShift)
+	}
+}

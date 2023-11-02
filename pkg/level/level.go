@@ -1,6 +1,7 @@
 package level
 
 import (
+	"github.com/drpaneas/pygame/pkg/player"
 	"github.com/drpaneas/pygame/pkg/tiles"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/pixelgl"
@@ -24,18 +25,11 @@ var Map = [][]string{
 	{"X", "X", "X", "X", "X", "X", "X", "X", " ", " ", "X", "X", "X", "X", "X", "X", " ", " ", "X", "X", " ", " ", "X", "X", "X", "X", " ", " "},
 }
 
-type TilesGroup []*tiles.Tile
-
-func (t TilesGroup) Draw(surface *pixelgl.Window) {
-	for _, tile := range t {
-		tile.Draw(surface)
-	}
-}
-
 type Level struct {
 	Layout     [][]string
 	Surface    *pixelgl.Window
-	Tiles      TilesGroup
+	Tiles      tiles.TilesGroup
+	Player     *player.Player
 	WorldShift float64
 }
 
@@ -61,21 +55,26 @@ func (l *Level) SetupLevel(layout [][]string) {
 				X: float64(x),
 				Y: float64(y),
 			}
+
 			if cell == "X" {
 				tile := tiles.NewTile(pos, tiles.Size)
 				l.Tiles = append(l.Tiles, tile)
+			}
+
+			if cell == "P" {
+				player := player.NewPlayer(pos)
+				l.Player = player
 			}
 		}
 	}
 }
 
-func (t TilesGroup) Update(xShift float64) {
-	for _, tile := range t {
-		tile.Update(xShift)
-	}
-}
-
 func (l *Level) Run() {
+	// Level Tiles
 	l.Tiles.Update(l.WorldShift)
 	l.Tiles.Draw(l.Surface)
+
+	// Player
+	l.Player.Update(l.WorldShift)
+	l.Player.Draw(l.Surface)
 }
