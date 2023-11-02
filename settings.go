@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	screenWidth  float64 = 1280
+	screenWidth  float64 = 1200
 	screenHeight float64 = float64(len(level.Map)) * tiles.Size // to have integer scaling
 )
 
