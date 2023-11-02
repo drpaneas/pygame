@@ -1,20 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
 	_ "image/png"
 
 	"github.com/drpaneas/pygame/pkg/display"
-	"github.com/drpaneas/pygame/pkg/keyboard"
 	"github.com/drpaneas/pygame/pkg/level"
 	"github.com/gopxl/pixel/v2/pixelgl"
 	"golang.org/x/image/colornames"
 )
 
 func run() {
-	screen := display.SetMode(screenWidth, screenHeight)
+	display.Screen = display.SetMode(screenWidth, screenHeight)
 	// fmt.Printf("resolution: %v x %v\n", screenWidth, screenHeight)
 	// Current level map, resolution: 1280 x 704
 
@@ -26,24 +26,28 @@ func run() {
 	start := time.Now()
 	frame := 0
 
-	world := level.NewLevel(level.Map, screen)
+	world := level.NewLevel(level.Map, display.Screen)
 
-	for !screen.Closed() {
+	for !display.Screen.Closed() {
 		for range clock.C {
 			// Called every tick of the clock (every frame)
 			frame++
 
+			if display.Screen.JustPressed(pixelgl.KeyK) {
+				fmt.Println("K pressed - Frame: ", frame)
+			}
+
 			// if you get an event, and this event is pressing the quit button, then close the window
-			if screen.JustPressed(keyboard.Esc) {
-				screen.SetClosed(true)
+			if display.Screen.JustPressed(pixelgl.KeyEscape) {
+				display.Screen.SetClosed(true)
 				os.Exit(1)
 			}
 
-			screen.Clear(colornames.Black)
+			display.Screen.Clear(colornames.Black)
 
 			world.Run()
 
-			screen.Update()
+			display.Screen.Update()
 
 			// If a second has passed, reset the frame (counter)
 			since := time.Since(start)

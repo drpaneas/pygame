@@ -4,13 +4,17 @@ import (
 	"image"
 	"image/color"
 
+	"github.com/drpaneas/pygame/pkg/input"
+	"github.com/drpaneas/pygame/pkg/keyboard"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/pixelgl"
 )
 
 type Player struct {
-	Sprite   *pixel.Sprite
-	Position pixel.Vec
+	Sprite    *pixel.Sprite
+	Position  pixel.Vec
+	Direction pixel.Vec
+	Speed     float64
 }
 
 func NewPlayer(pos *pixel.Vec) *Player {
@@ -42,16 +46,30 @@ func NewPlayer(pos *pixel.Vec) *Player {
 			X: sprite.Picture().Bounds().Center().X,
 			Y: sprite.Picture().Bounds().Center().Y,
 		},
+		Direction: pixel.Vec{
+			X: 0,
+			Y: 0,
+		},
+		Speed: 8,
 	}
 }
 
-func (p *Player) Update(xShift float64) {
-	velocity := pixel.Vec{
-		X: xShift,
-		Y: 0,
-	}
+func (p *Player) GetInput() {
+	keys := input.GetKeys()
 
-	p.Position = p.Position.Add(pixel.V(velocity.X, velocity.Y))
+	if keys[keyboard.Right] {
+		p.Direction.X = 1
+	} else if keys[keyboard.Left] {
+		p.Direction.X = -1
+	} else {
+		p.Direction.X = 0
+	}
+}
+
+func (p *Player) Update() {
+	p.GetInput()
+	p.Direction = p.Direction.Scaled(p.Speed) // apply the speed
+	p.Position = p.Position.Add(p.Direction)
 
 }
 

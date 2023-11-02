@@ -75,6 +75,6 @@ func (l *Level) Run() {
 	l.Tiles.Draw(l.Surface)
 
 	// Player
-	l.Player.Update(l.WorldShift)
+	l.Player.Update()
 	l.Player.Draw(l.Surface)
 }

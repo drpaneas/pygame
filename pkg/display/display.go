@@ -7,6 +7,8 @@ import (
 	"github.com/gopxl/pixel/v2/pixelgl"
 )
 
+var Screen *pixelgl.Window
+
 func SetMode(screenWidth, screenHeight float64) *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
 		Title:       "Platformer",
