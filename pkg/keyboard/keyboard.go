@@ -6,4 +6,5 @@ const (
 	Down  = "Down"
 	Left  = "Left"
 	Right = "Right"
+	Space = "Space"
 )

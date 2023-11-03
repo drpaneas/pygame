@@ -16,6 +16,7 @@ type Player struct {
 	Direction pixel.Vec
 	Speed     float64
 	Gravity   float64
+	JumpSpeed float64
 }
 
 func NewPlayer(pos *pixel.Vec) *Player {
@@ -51,8 +52,9 @@ func NewPlayer(pos *pixel.Vec) *Player {
 			X: 0,
 			Y: 0,
 		},
-		Speed:   8,
-		Gravity: 0.8,
+		Speed:     8,
+		Gravity:   0.8,
+		JumpSpeed: 16,
 	}
 }
 
@@ -66,6 +68,10 @@ func (p *Player) GetInput() {
 	} else {
 		p.Direction.X = 0
 	}
+
+	if keys[keyboard.Space] {
+		p.Jump()
+	}
 }
 
 func (p *Player) ApplyGravity() {
@@ -73,6 +79,10 @@ func (p *Player) ApplyGravity() {
 	// So, the direction has to be negative, that is why we subtract the gravity.
 	p.Direction.Y -= p.Gravity
 	p.Position.Y += p.Direction.Y // Adding the direction to the position (aka subtracting the gravity, aka falling down)
+}
+
+func (p *Player) Jump() {
+	p.Direction.Y = p.JumpSpeed
 }
 
 func (p *Player) Update() {
