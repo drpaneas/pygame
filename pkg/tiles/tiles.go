@@ -47,7 +47,7 @@ func (t *Tile) Update(xShift float64) {
 		Y: 0,
 	}
 
-	t.Position = t.Position.Add(pixel.V(velocity.X, velocity.Y))
+	t.Position = t.Position.Add(velocity)
 
 }
 

@@ -68,9 +68,15 @@ func (p *Player) GetInput() {
 
 func (p *Player) Update() {
 	p.GetInput()
-	p.Direction = p.Direction.Scaled(p.Speed) // apply the speed
-	p.Position = p.Position.Add(p.Direction)
 
+	// Create a new velocity vector
+	// Directions are either -1, 0 or 1 (left, none, right) and we multiply them by the speed
+	velocity := pixel.Vec{
+		X: p.Direction.X * p.Speed,
+		Y: p.Direction.Y * p.Speed,
+	}
+
+	p.Position = p.Position.Add(velocity)
 }
 
 func (p *Player) Draw(surface *pixelgl.Window) {

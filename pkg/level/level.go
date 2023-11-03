@@ -1,6 +1,7 @@
 package level
 
 import (
+	"github.com/drpaneas/pygame/pkg/display"
 	"github.com/drpaneas/pygame/pkg/player"
 	"github.com/drpaneas/pygame/pkg/tiles"
 	"github.com/gopxl/pixel/v2"
@@ -69,6 +70,24 @@ func (l *Level) SetupLevel(layout [][]string) {
 	}
 }
 
+// ScrollX is the horizontal camera movement
+func (l *Level) ScrollX() {
+	playerX := l.Player.Position.X
+	screenwidth := display.Screen.Bounds().W()
+	directionX := l.Player.Direction.X
+
+	if playerX < screenwidth/4 && directionX < 0 {
+		l.WorldShift = 8
+		l.Player.Speed = 0
+	} else if playerX > screenwidth-(screenwidth/4) && directionX > 0 {
+		l.WorldShift = -8
+		l.Player.Speed = 0
+	} else {
+		l.WorldShift = 0
+		l.Player.Speed = 8
+	}
+}
+
 func (l *Level) Run() {
 	// Level Tiles
 	l.Tiles.Update(l.WorldShift)
@@ -77,4 +96,5 @@ func (l *Level) Run() {
 	// Player
 	l.Player.Update()
 	l.Player.Draw(l.Surface)
+	l.ScrollX()
 }
