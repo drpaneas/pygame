@@ -15,6 +15,7 @@ type Player struct {
 	Position  pixel.Vec
 	Direction pixel.Vec
 	Speed     float64
+	Gravity   float64
 }
 
 func NewPlayer(pos *pixel.Vec) *Player {
@@ -50,7 +51,8 @@ func NewPlayer(pos *pixel.Vec) *Player {
 			X: 0,
 			Y: 0,
 		},
-		Speed: 8,
+		Speed:   8,
+		Gravity: 0.8,
 	}
 }
 
@@ -66,6 +68,13 @@ func (p *Player) GetInput() {
 	}
 }
 
+func (p *Player) ApplyGravity() {
+	// Falling down, means that the Y-axis is decreasing
+	// So, the direction has to be negative, that is why we subtract the gravity.
+	p.Direction.Y -= p.Gravity
+	p.Position.Y += p.Direction.Y // Adding the direction to the position (aka subtracting the gravity, aka falling down)
+}
+
 func (p *Player) Update() {
 	p.GetInput()
 
@@ -73,10 +82,11 @@ func (p *Player) Update() {
 	// Directions are either -1, 0 or 1 (left, none, right) and we multiply them by the speed
 	velocity := pixel.Vec{
 		X: p.Direction.X * p.Speed,
-		Y: p.Direction.Y * p.Speed,
 	}
 
 	p.Position = p.Position.Add(velocity)
+
+	p.ApplyGravity()
 }
 
 func (p *Player) Draw(surface *pixelgl.Window) {
