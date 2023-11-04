@@ -6,6 +6,7 @@ import (
 
 	"github.com/drpaneas/pygame/pkg/input"
 	"github.com/drpaneas/pygame/pkg/keyboard"
+	"github.com/drpaneas/pygame/pkg/tiles"
 	"github.com/gopxl/pixel/v2"
 	"github.com/gopxl/pixel/v2/pixelgl"
 )
@@ -53,7 +54,7 @@ func NewPlayer(pos *pixel.Vec) *Player {
 			Y: 0,
 		},
 		Speed:     8,
-		Gravity:   0.8,
+		Gravity:   -0.8,
 		JumpSpeed: 16,
 	}
 }
@@ -77,7 +78,7 @@ func (p *Player) GetInput() {
 func (p *Player) ApplyGravity() {
 	// Falling down, means that the Y-axis is decreasing
 	// So, the direction has to be negative, that is why we subtract the gravity.
-	p.Direction.Y -= p.Gravity
+	p.Direction.Y += p.Gravity
 	p.Position.Y += p.Direction.Y // Adding the direction to the position (aka subtracting the gravity, aka falling down)
 }
 
@@ -85,18 +86,34 @@ func (p *Player) Jump() {
 	p.Direction.Y = p.JumpSpeed
 }
 
+func (p *Player) Bounds() pixel.Rect {
+	// Calculate the player's bounding box based on its position and size
+	return pixel.R(
+		p.Position.X-p.Sprite.Frame().W()/2,
+		p.Position.Y-p.Sprite.Frame().H()/2,
+		p.Position.X+p.Sprite.Frame().W()/2,
+		p.Position.Y+p.Sprite.Frame().H()/2,
+	)
+}
+
+func (p *Player) CollidesWith(tile *tiles.Tile) bool {
+	// Check if the player's bounding box intersects with the tile's bounding box
+	intersection := p.Bounds().Intersect(tile.Bounds())
+	return intersection.Area() > 0
+}
+
 func (p *Player) Update() {
 	p.GetInput()
 
-	// Create a new velocity vector
-	// Directions are either -1, 0 or 1 (left, none, right) and we multiply them by the speed
-	velocity := pixel.Vec{
-		X: p.Direction.X * p.Speed,
-	}
+	// // Create a new velocity vector
+	// // Directions are either -1, 0 or 1 (left, none, right) and we multiply them by the speed
+	// velocity := pixel.Vec{
+	// 	X: p.Direction.X * p.Speed,
+	// }
 
-	p.Position = p.Position.Add(velocity)
+	// p.Position = p.Position.Add(velocity)
 
-	p.ApplyGravity()
+	// p.ApplyGravity()
 }
 
 func (p *Player) Draw(surface *pixelgl.Window) {

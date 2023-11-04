@@ -17,9 +17,9 @@ var Map = [][]string{
 	{" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "},
 	{" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "},
 	{" ", "X", "X", " ", " ", " ", " ", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", "X", " ", " ", " "},
-	{" ", "X", "X", " ", "P", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "},
+	{" ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "},
 	{" ", "X", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", "X", " "},
-	{" ", "X", "X", "X", "X", " ", " ", " ", " ", " ", " ", " ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "},
+	{" ", "X", "X", "X", "X", " ", " ", "P", " ", " ", " ", " ", "X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "},
 	{" ", "X", "X", " ", " ", " ", " ", "X", " ", " ", "X", "X", "X", "X", " ", " ", " ", " ", "X", "X", " ", " ", "X", "X", " ", " ", " ", " "},
 	{" ", " ", " ", " ", " ", " ", " ", "X", " ", " ", "X", "X", "X", "X", " ", " ", " ", " ", "X", "X", " ", " ", "X", "X", "X", " ", " ", " "},
 	{" ", " ", " ", " ", "X", "X", "X", "X", " ", " ", "X", "X", "X", "X", "X", "X", " ", " ", "X", "X", " ", " ", "X", "X", "X", "X", " ", " "},
@@ -88,13 +88,61 @@ func (l *Level) ScrollX() {
 	}
 }
 
+func (l *Level) HorizontalMovementCollision() {
+	// l.Player.Position.X += l.Player.Direction.X * l.Player.Speed
+
+	// Create a new velocity vector
+	// Directions are either -1, 0 or 1 (left, none, right) and we multiply them by the speed
+	velocity := pixel.Vec{
+		X: l.Player.Direction.X * l.Player.Speed,
+	}
+
+	l.Player.Position = l.Player.Position.Add(velocity)
+
+	// loop through the titles I could possibly collide with
+	for _, tile := range l.Tiles {
+		// if the player collides with a tile
+		if l.Player.CollidesWith(tile) {
+			// if the player is moving right, stop the player at the left side of the tile
+			if l.Player.Direction.X > 0 {
+				l.Player.Position.X = tile.Position.X - (tile.Sprite.Frame().W() / 2) - (l.Player.Sprite.Frame().W() / 2)
+			} else if l.Player.Direction.X < 0 {
+				// if the player is moving left, stop the player at the right side of the tile
+				l.Player.Position.X = tile.Position.X + (tile.Sprite.Frame().W() / 2) + (l.Player.Sprite.Frame().W() / 2)
+			}
+		}
+	}
+}
+
+func (l *Level) VerticalMovementCollision() {
+	l.Player.ApplyGravity()
+
+	// loop through the titles I could possibly collide with
+	for _, tile := range l.Tiles {
+		// if the player collides with a tile
+		if l.Player.CollidesWith(tile) {
+			// if the player is moving up, stop the player at the bottom side of the tile
+			if l.Player.Direction.Y > 0 {
+				l.Player.Position.Y = tile.Position.Y - (tile.Sprite.Frame().H() / 2) - (l.Player.Sprite.Frame().H() / 2)
+				l.Player.Direction.Y = 0
+			} else if l.Player.Direction.Y < 0 {
+				// if the player is moving down, stop the player at the top side of the tile
+				l.Player.Position.Y = tile.Position.Y + (tile.Sprite.Frame().H() / 2) + (l.Player.Sprite.Frame().H() / 2)
+				l.Player.Direction.Y = 0
+			}
+		}
+	}
+}
+
 func (l *Level) Run() {
 	// Level Tiles
 	l.Tiles.Update(l.WorldShift)
 	l.Tiles.Draw(l.Surface)
+	l.ScrollX()
 
 	// Player
 	l.Player.Update()
+	l.HorizontalMovementCollision()
+	l.VerticalMovementCollision()
 	l.Player.Draw(l.Surface)
-	l.ScrollX()
 }

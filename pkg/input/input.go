@@ -31,7 +31,7 @@ func GetKeys() map[string]bool {
 		keys["Right"] = true
 	}
 
-	if display.Screen.Pressed(pixelgl.KeySpace) {
+	if display.Screen.JustPressed(pixelgl.KeySpace) {
 		keys["Space"] = true
 	}
 

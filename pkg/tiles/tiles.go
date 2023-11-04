@@ -41,6 +41,16 @@ func NewTile(pos *pixel.Vec, tilesize int) *Tile {
 	}
 }
 
+func (t *Tile) Bounds() pixel.Rect {
+	// Calculate the player's bounding box based on its position and size
+	return pixel.R(
+		t.Position.X-t.Sprite.Frame().W()/2,
+		t.Position.Y-t.Sprite.Frame().H()/2,
+		t.Position.X+t.Sprite.Frame().W()/2,
+		t.Position.Y+t.Sprite.Frame().H()/2,
+	)
+}
+
 func (t *Tile) Update(xShift float64) {
 	velocity := pixel.Vec{
 		X: xShift,

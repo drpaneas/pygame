@@ -131,6 +131,7 @@ That said, the function becomes like this:
 func (l *Level) SetupLevel(layout [][]string) {
 	for row_index, row := range layout {
 		for col_index, cell := range row {
+            // Get the 'from', X and Y coordinates:
 			x := col_index * tiles.Size
 			y := (len(layout) - row_index - 1) * tiles.Size // invert Y-axis
 			 
