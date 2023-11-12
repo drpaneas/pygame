@@ -21,6 +21,7 @@ type Player struct {
 	Status      string
 	FacingRight bool
 	OnGround    bool
+	OnCeiling   bool
 }
 
 func NewPlayer(pos *pixel.Vec) *Player {
@@ -62,6 +63,7 @@ func NewPlayer(pos *pixel.Vec) *Player {
 		Status:      "idle",
 		FacingRight: true,
 		OnGround:    false,
+		OnCeiling:   false,
 	}
 }
 
@@ -87,7 +89,7 @@ func (p *Player) GetInput() {
 // a. jumping (up) - falling (down) -         walking (left/right)         -         idle (none)
 // direction.y > 0   direction.y <0   direction.y ==0 && direction.x != 0   direction.y ==0 && direction.x == 0
 func (p *Player) GetStatus() {
-	if p.Direction.Y > 0 {
+	if p.Direction.Y > 0 || p.OnCeiling {
 		p.Status = "jump"
 	} else if p.Direction.Y < 0 {
 		p.Status = "fall"
@@ -129,8 +131,7 @@ func (p *Player) CollidesWith(tile *tiles.Tile) bool {
 
 func (p *Player) Update() {
 	p.GetInput()
-	p.GetStatus()
-
+	// p.GetStatus()
 }
 
 func (p *Player) Draw(surface *pixelgl.Window) {

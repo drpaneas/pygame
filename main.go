@@ -33,6 +33,8 @@ func run() {
 			// Called every tick of the clock (every frame)
 			frame++
 
+			fmt.Println("Beggining of the frame: ", frame)
+
 			if display.Screen.JustPressed(pixelgl.KeyK) {
 				fmt.Println("K pressed - Frame: ", frame)
 			}
@@ -48,6 +50,9 @@ func run() {
 			world.Run()
 
 			display.Screen.Update()
+
+			fmt.Println("End of the frame: ", frame)
+			fmt.Println("--------------------------------")
 
 			// If a second has passed, reset the frame (counter)
 			since := time.Since(start)
