@@ -12,12 +12,15 @@ import (
 )
 
 type Player struct {
-	Sprite    *pixel.Sprite
-	Position  pixel.Vec
-	Direction pixel.Vec
-	Speed     float64
-	Gravity   float64
-	JumpSpeed float64
+	Sprite      *pixel.Sprite
+	Position    pixel.Vec
+	Direction   pixel.Vec
+	Speed       float64
+	Gravity     float64
+	JumpSpeed   float64
+	Status      string
+	FacingRight bool
+	OnGround    bool
 }
 
 func NewPlayer(pos *pixel.Vec) *Player {
@@ -53,9 +56,12 @@ func NewPlayer(pos *pixel.Vec) *Player {
 			X: 0,
 			Y: 0,
 		},
-		Speed:     8,
-		Gravity:   -0.8,
-		JumpSpeed: 16,
+		Speed:       8,
+		Gravity:     -0.8,
+		JumpSpeed:   16,
+		Status:      "idle",
+		FacingRight: true,
+		OnGround:    false,
 	}
 }
 
@@ -64,14 +70,33 @@ func (p *Player) GetInput() {
 
 	if keys[keyboard.Right] {
 		p.Direction.X = 1
+		p.FacingRight = true
 	} else if keys[keyboard.Left] {
 		p.Direction.X = -1
+		p.FacingRight = false
 	} else {
 		p.Direction.X = 0
 	}
 
-	if keys[keyboard.Space] {
+	if keys[keyboard.Space] && p.OnGround {
 		p.Jump()
+	}
+}
+
+// GetStatus figures out what the player is doind
+// a. jumping (up) - falling (down) -         walking (left/right)         -         idle (none)
+// direction.y > 0   direction.y <0   direction.y ==0 && direction.x != 0   direction.y ==0 && direction.x == 0
+func (p *Player) GetStatus() {
+	if p.Direction.Y > 0 {
+		p.Status = "jump"
+	} else if p.Direction.Y < 0 {
+		p.Status = "fall"
+	} else {
+		if p.Direction.X != 0 {
+			p.Status = "walk"
+		} else {
+			p.Status = "idle"
+		}
 	}
 }
 
@@ -104,16 +129,8 @@ func (p *Player) CollidesWith(tile *tiles.Tile) bool {
 
 func (p *Player) Update() {
 	p.GetInput()
+	p.GetStatus()
 
-	// // Create a new velocity vector
-	// // Directions are either -1, 0 or 1 (left, none, right) and we multiply them by the speed
-	// velocity := pixel.Vec{
-	// 	X: p.Direction.X * p.Speed,
-	// }
-
-	// p.Position = p.Position.Add(velocity)
-
-	// p.ApplyGravity()
 }
 
 func (p *Player) Draw(surface *pixelgl.Window) {
