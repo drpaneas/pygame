@@ -8,22 +8,23 @@ import (
 	"github.com/drpaneas/pygame/pkg/keyboard"
 	"github.com/drpaneas/pygame/pkg/tiles"
 	"github.com/gopxl/pixel/v2"
-	"github.com/gopxl/pixel/v2/pixelgl"
+	"github.com/gopxl/pixel/v2/backends/opengl"
 )
 
+// Player is the main character of the game
 type Player struct {
-	Sprite      *pixel.Sprite
-	Position    pixel.Vec
-	Direction   pixel.Vec
-	Speed       float64
-	Gravity     float64
-	JumpSpeed   float64
-	Status      string
-	FacingRight bool
-	OnGround    bool
-	OnCeiling   bool
+	Sprite    *pixel.Sprite
+	Position  pixel.Vec
+	Direction pixel.Vec
+	Speed     float64
+	Gravity   float64
+	JumpSpeed float64
+	Status    string
+	OnGround  bool
+	OnCeiling bool
 }
 
+// NewPlayer creates a new player with the given position
 func NewPlayer(pos *pixel.Vec) *Player {
 	// 1. Create an image with the the size of 32x64 for now
 	width := 32
@@ -57,31 +58,30 @@ func NewPlayer(pos *pixel.Vec) *Player {
 			X: 0,
 			Y: 0,
 		},
-		Speed:       8,
-		Gravity:     -0.8,
-		JumpSpeed:   16,
-		Status:      "idle",
-		FacingRight: true,
-		OnGround:    false,
-		OnCeiling:   false,
+		Speed:     8,
+		Gravity:   -0.8,
+		JumpSpeed: 16,
+		Status:    "idle",
+		OnGround:  false,
+		OnCeiling: false,
 	}
 }
 
-func (p *Player) GetInput() {
+// getInputSetDirection gets the input from the keyboard and sets the player's direction
+func (p *Player) getInputSetDirection() {
 	keys := input.GetKeys()
 
 	if keys[keyboard.Right] {
 		p.Direction.X = 1
-		p.FacingRight = true
 	} else if keys[keyboard.Left] {
 		p.Direction.X = -1
-		p.FacingRight = false
 	} else {
 		p.Direction.X = 0
 	}
 
+	// Player is a able to jump only if he is on the ground (sorry, no double jumps)
 	if keys[keyboard.Space] && p.OnGround {
-		p.Jump()
+		p.jump()
 	}
 }
 
@@ -102,18 +102,21 @@ func (p *Player) GetStatus() {
 	}
 }
 
+// ApplyGravity applies gravity to the player
 func (p *Player) ApplyGravity() {
 	// Falling down, means that the Y-axis is decreasing
-	// So, the direction has to be negative, that is why we subtract the gravity.
+	// Gravity is a negative number, so we add it to the direction
 	p.Direction.Y += p.Gravity
-	p.Position.Y += p.Direction.Y // Adding the direction to the position (aka subtracting the gravity, aka falling down)
+	p.Position.Y += p.Direction.Y
 }
 
-func (p *Player) Jump() {
+// jump makes the player jump
+func (p *Player) jump() {
 	p.Direction.Y = p.JumpSpeed
 }
 
-func (p *Player) Bounds() pixel.Rect {
+// boundBox returns the player's bounding box
+func (p *Player) boundBox() pixel.Rect {
 	// Calculate the player's bounding box based on its position and size
 	return pixel.R(
 		p.Position.X-p.Sprite.Frame().W()/2,
@@ -123,18 +126,20 @@ func (p *Player) Bounds() pixel.Rect {
 	)
 }
 
-func (p *Player) CollidesWith(tile *tiles.Tile) bool {
+// CollidesWithTile checks if the player collides with a tile
+func (p *Player) CollidesWithTile(tile *tiles.Tile) bool {
 	// Check if the player's bounding box intersects with the tile's bounding box
-	intersection := p.Bounds().Intersect(tile.Bounds())
+	intersection := p.boundBox().Intersect(tile.BoundBox())
 	return intersection.Area() > 0
 }
 
+// Update updates the player logic
 func (p *Player) Update() {
-	p.GetInput()
-	// p.GetStatus()
+	p.getInputSetDirection()
 }
 
-func (p *Player) Draw(surface *pixelgl.Window) {
+// Draw draws the player
+func (p *Player) Draw(surface *opengl.Window) {
 	mat := pixel.IM.Moved(p.Position)
 	p.Sprite.Draw(surface, mat)
 }

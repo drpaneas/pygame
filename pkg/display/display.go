@@ -4,13 +4,16 @@ import (
 	"log"
 
 	"github.com/gopxl/pixel/v2"
-	"github.com/gopxl/pixel/v2/pixelgl"
+	"github.com/gopxl/pixel/v2/backends/opengl"
 )
 
-var Screen *pixelgl.Window
+// Screen is the window of the game that is being displayed to the user on the screen of the computer or device they are using
+var Screen *opengl.Window
 
-func SetMode(screenWidth, screenHeight float64) *pixelgl.Window {
-	cfg := pixelgl.WindowConfig{
+// SetMode sets the mode of the screen
+// and returns the window
+func SetMode(screenWidth, screenHeight float64) *opengl.Window {
+	cfg := opengl.WindowConfig{
 		Title:       "Platformer",
 		Bounds:      pixel.R(0, 0, screenWidth, screenHeight),
 		VSync:       true,
@@ -18,12 +21,12 @@ func SetMode(screenWidth, screenHeight float64) *pixelgl.Window {
 		Undecorated: false,
 	}
 
-	win, err := pixelgl.NewWindow(cfg)
+	win, err := opengl.NewWindow(cfg)
 	if err != nil {
 		log.Fatalf("Failed to create window: %v", err)
 	}
 
-	win.SetSmooth(false)
+	win.SetSmooth(false) // For scaling pixel art, it is recommended to use nearest neighbor interpolation.
 
 	return win
 }

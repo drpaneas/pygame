@@ -5,16 +5,19 @@ import (
 	"image/color"
 
 	"github.com/gopxl/pixel/v2"
-	"github.com/gopxl/pixel/v2/pixelgl"
+	"github.com/gopxl/pixel/v2/backends/opengl"
 )
 
+// Size of the tile
 const Size = 64
 
+// Tile is a major component of the level design
 type Tile struct {
 	Sprite   *pixel.Sprite
 	Position pixel.Vec
 }
 
+// NewTile creates a new tile with the given position and size
 func NewTile(pos *pixel.Vec, tilesize int) *Tile {
 	// create a pixel.Picture with pos Bounds and size
 	surface := image.Rect(int(pos.X), int(pos.Y), int(pos.X)+tilesize, int(pos.Y)+tilesize)
@@ -41,7 +44,8 @@ func NewTile(pos *pixel.Vec, tilesize int) *Tile {
 	}
 }
 
-func (t *Tile) Bounds() pixel.Rect {
+// BoundBox returns the bounding box of the tile
+func (t *Tile) BoundBox() pixel.Rect {
 	// Calculate the player's bounding box based on its position and size
 	return pixel.R(
 		t.Position.X-t.Sprite.Frame().W()/2,
@@ -51,6 +55,7 @@ func (t *Tile) Bounds() pixel.Rect {
 	)
 }
 
+// Update updates the tile's position
 func (t *Tile) Update(xShift float64) {
 	velocity := pixel.Vec{
 		X: xShift,
@@ -61,21 +66,8 @@ func (t *Tile) Update(xShift float64) {
 
 }
 
-func (t *Tile) Draw(surface *pixelgl.Window) {
+// Draw draws the tile
+func (t *Tile) Draw(surface *opengl.Window) {
 	mat := pixel.IM.Moved(t.Position)
 	t.Sprite.Draw(surface, mat)
-}
-
-type TilesGroup []*Tile
-
-func (t TilesGroup) Draw(surface *pixelgl.Window) {
-	for _, tile := range t {
-		tile.Draw(surface)
-	}
-}
-
-func (t TilesGroup) Update(xShift float64) {
-	for _, tile := range t {
-		tile.Update(xShift)
-	}
 }

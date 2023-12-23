@@ -2,7 +2,7 @@ package input
 
 import (
 	"github.com/drpaneas/pygame/pkg/display"
-	"github.com/gopxl/pixel/v2/pixelgl"
+	"github.com/gopxl/pixel/v2"
 )
 
 // GetKeys returns a map of the pressed keys
@@ -11,27 +11,27 @@ import (
 func GetKeys() map[string]bool {
 	keys := make(map[string]bool)
 
-	if display.Screen.Pressed(pixelgl.KeyEscape) {
+	if display.Screen.Pressed(pixel.KeyEscape) {
 		keys["Esc"] = true
 	}
 
-	if display.Screen.Pressed(pixelgl.KeyUp) {
+	if display.Screen.Pressed(pixel.KeyUp) || display.Screen.Pressed(pixel.KeyW) {
 		keys["Up"] = true
 	}
 
-	if display.Screen.Pressed(pixelgl.KeyDown) {
+	if display.Screen.Pressed(pixel.KeyDown) || display.Screen.Pressed(pixel.KeyS) {
 		keys["Down"] = true
 	}
 
-	if display.Screen.Pressed(pixelgl.KeyLeft) {
+	if display.Screen.Pressed(pixel.KeyLeft) || display.Screen.Pressed(pixel.KeyA) {
 		keys["Left"] = true
 	}
 
-	if display.Screen.Pressed(pixelgl.KeyRight) {
+	if display.Screen.Pressed(pixel.KeyRight) || display.Screen.Pressed(pixel.KeyD) {
 		keys["Right"] = true
 	}
 
-	if display.Screen.JustPressed(pixelgl.KeySpace) {
+	if display.Screen.JustPressed(pixel.KeySpace) {
 		keys["Space"] = true
 	}
 

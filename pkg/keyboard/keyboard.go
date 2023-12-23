@@ -7,4 +7,8 @@ const (
 	Left  = "Left"
 	Right = "Right"
 	Space = "Space"
+	W     = "W"
+	A     = "A"
+	S     = "S"
+	D     = "D"
 )

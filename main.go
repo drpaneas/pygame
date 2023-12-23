@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"time"
 
@@ -9,16 +8,13 @@ import (
 
 	"github.com/drpaneas/pygame/pkg/display"
 	"github.com/drpaneas/pygame/pkg/level"
-	"github.com/gopxl/pixel/v2/pixelgl"
+	"github.com/gopxl/pixel/v2"
+	"github.com/gopxl/pixel/v2/backends/opengl"
 	"golang.org/x/image/colornames"
 )
 
 func run() {
 	display.Screen = display.SetMode(screenWidth, screenHeight)
-	// fmt.Printf("resolution: %v x %v\n", screenWidth, screenHeight)
-	// Current level map, resolution: 1280 x 704
-
-	// sprite.Draw(screen, pixel.IM.Moved(screen.Bounds().Center()))
 
 	// Configure the game loop to run in 60 FPS
 	timeframe := time.Second / framesPerSecond
@@ -26,33 +22,27 @@ func run() {
 	start := time.Now()
 	frame := 0
 
-	world := level.NewLevel(level.Map, display.Screen)
+	gameLevel := level.NewLevel(level.Map, display.Screen)
 
 	for !display.Screen.Closed() {
 		for range clock.C {
 			// Called every tick of the clock (every frame)
 			frame++
 
-			fmt.Println("Beggining of the frame: ", frame)
-
-			if display.Screen.JustPressed(pixelgl.KeyK) {
-				fmt.Println("K pressed - Frame: ", frame)
-			}
-
-			// if you get an event, and this event is pressing the quit button, then close the window
-			if display.Screen.JustPressed(pixelgl.KeyEscape) {
+			// Quit the game if the user presses the Esc key
+			if display.Screen.JustPressed(pixel.KeyEscape) {
 				display.Screen.SetClosed(true)
 				os.Exit(1)
 			}
 
+			// Clear the screen with black color
 			display.Screen.Clear(colornames.Black)
 
-			world.Run()
+			// All the logic of the game (update, draw, etc is here)
+			gameLevel.UpdateAndDraw()
 
+			// Game engine stuff, do not touch
 			display.Screen.Update()
-
-			fmt.Println("End of the frame: ", frame)
-			fmt.Println("--------------------------------")
 
 			// If a second has passed, reset the frame (counter)
 			since := time.Since(start)
@@ -65,5 +55,5 @@ func run() {
 }
 
 func main() {
-	pixelgl.Run(run)
+	opengl.Run(run)
 }
