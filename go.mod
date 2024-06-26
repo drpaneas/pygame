@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/gopxl/pixel/v2 v2.1.0
-	golang.org/x/image v0.14.0
+	golang.org/x/image v0.18.0
 )
 
 require (
