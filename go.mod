@@ -1,10 +1,10 @@
 module github.com/drpaneas/pygame
 
-go 1.21.1
+go 1.25.0
 
 require (
 	github.com/gopxl/pixel/v2 v2.1.0
-	golang.org/x/image v0.18.0
+	golang.org/x/image v0.38.0
 )
 
 require (
